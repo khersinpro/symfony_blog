@@ -20,9 +20,9 @@ class SecurityController extends AbstractController
         $user =  new User();
         $form = $this->createForm(UserType::class, $user);
         $form->handleRequest($request);
-
         if ($form->isSubmitted() && $form->isValid()) {
             $user->setPassword($passwordHasher->hashPassword($user, $user->getPassword()));
+            $user->setAvatar($this->getParameter('default.profile.avatar'));
             $manager->persist($user);
             $manager->flush();
             return $this->redirectToRoute('app_signin');

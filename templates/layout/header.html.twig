@@ -1,0 +1,11 @@
+<header>
+    <nav>
+        {% if is_granted('IS_AUTHENTICATED_REMEMBERED') %}
+            <a href="{{ path('app_profile') }}">Profil</a>
+            <a href="{{ path('app_logout') }}">Déconnexion</a>
+        {% else %}
+            <a href="{{ path('app_signup') }}">Inscription</a>
+            <a href="{{ path('app_signin') }}">Connexion</a>
+        {% endif %}
+    </nav>
+</header>

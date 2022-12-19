@@ -4,27 +4,28 @@ namespace App\Controller;
 
 use App\Service\FileUploader;
 use Doctrine\ORM\EntityManagerInterface;
-
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
+use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Validator\Constraints\Image;
+use Symfony\Component\Validator\Constraints\Length;
+use Symfony\Component\Validator\Constraints\NotBlank;
 
 class ProfileController extends AbstractController
 {
     #[Route('/profile', name: 'app_profile')]
     public function userProfile(): Response
     {
-
         return $this->render('profile/index.html.twig', [
-
         ]);
     }
+
     #[Route('/profile/editavatar', name: 'app_editProfilePicture')]
     public function editProfilePicture(Request $request, EntityManagerInterface $manager, Filesystem $fs, FileUploader $fileUploader): Response
     {
@@ -67,6 +68,46 @@ class ProfileController extends AbstractController
 
         return $this->render('profile/edit_profile_picture.html.twig', [
             'form' => $form
+        ]);
+    }
+
+    #[Route('/profile/updatepassword', name: 'app_updatePassword')]
+    public function updateUserPassword(Request $request, UserPasswordHasherInterface $userPasswordHasherInterface, 
+    EntityManagerInterface $manager): Response
+    {
+        $constraints =  [
+            new Length([
+                'min' => 6,
+                'minMessage' => 'Le mot de passe doit faire 6 caractères minimun'
+            ]),
+            new NotBlank([
+                'message' => 'Veuillez renseigner un mot de passe'
+            ])
+        ];
+        $form = $this->createFormBuilder()
+            ->add('new_password', PasswordType::class, ['label' => 'Nouveau mot de passe :', 'constraints' => $constraints])
+            ->add('confirm_password', PasswordType::class, ['label' => 'Confirmation du nouveau mot de passe :', 'constraints' => $constraints])
+            ->add('submit', SubmitType::class, ['label' => 'Valider'])
+            ->getForm();
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $newPassword = $form->get('new_password')->getData();
+            $confirmPassword = $form->get('confirm_password')->getData();
+
+            if ($newPassword && $confirmPassword && $newPassword === $confirmPassword) {
+                $currentUser = $this->getUser();
+                $currentUser->setPassword($userPasswordHasherInterface->hashPassword($currentUser, $newPassword));
+                $manager->flush();
+                $this->addFlash('success', 'Mot de passe modifier avec succés.');
+            } else {
+                $this->addFlash('danger','Mot de passe non identique, veuillez réessayer.');
+            }
+            return $this->redirectToRoute('app_profile');
+        }
+
+        return $this->render('profile/edit_user_password.html.twig', [
+            'form' => $form,
         ]);
     }
 }

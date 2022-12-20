@@ -7,6 +7,8 @@ parameters:
     profile.folder: '%kernel.project_dir%/public/images/profile/'
     profile.public.path : '/images/profile/'
     default.profile.avatar: '/images/profile/default_avatar.png'
+    article.image.folder: '%kernel.project_dir%/public/images/blog_articles/'
+    article.image.public_path: '/images/blog_articles/'
 services:
     # default configuration for services in *this* file
     _defaults:

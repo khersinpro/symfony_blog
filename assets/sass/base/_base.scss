@@ -3,9 +3,15 @@
     margin: 0;
     box-sizing: border-box;
 }
-
-.wrapper {
+body {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+}
+.content {
     width: 95%;
     max-width: 1300px;
-    margin: 0 auto;
+    flex: 1;
+    display: flex;
 }

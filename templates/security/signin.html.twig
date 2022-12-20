@@ -19,7 +19,7 @@
             <input type="checkbox" name="_remember_me" checked>
             Rester connecté
         </label>
-        <input type="hidden" name='_target_path' value='/profile'>
+        {# <input type="hidden" name='_target_path' value='/profile'> #}
         <input type="hidden" name='_csrf_token' value='{{ csrf_token('authenticate') }}'>
         <div class="mb-3">
             <button class="btn-primary btn" type="submit">Envoyer</button>

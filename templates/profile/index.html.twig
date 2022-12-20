@@ -1,13 +1,15 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Hello ProfileController!{% endblock %}
+{% block title %}Profil{% endblock %}
 
 {% block body %}
-    <div class="wrapper">
+    <div class="content">
         <div class="profile">
             <div class="presentation">
                 <div class="presentation--container">
-                    <img class="avatar" src="{{ app.user.avatar }}" alt="">
+                    <div class="avatarContainer">
+                        <img class="avatarContainer--avatar" src="{{ app.user.avatar }}" alt="">
+                    </div>
                     <p class="presentation--container_nickname">{{ app.user.nickname }}</p>
                 </div>
                 <div class="presentation--control">

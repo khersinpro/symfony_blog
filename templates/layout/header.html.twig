@@ -1,11 +1,13 @@
 <header>
     <nav>
+        <a class="btn btn-primary" href="{{ path('app_blog') }}">accueil</a>
         {% if is_granted('IS_AUTHENTICATED_REMEMBERED') %}
-            <a href="{{ path('app_profile') }}">Profil</a>
-            <a href="{{ path('app_logout') }}">Déconnexion</a>
+            <a class="btn btn-success" href="{{ path('app_create_article') }}">Créer un article</a>
+            <a class="btn btn-secondary" href="{{ path('app_profile') }}">Profil</a>
+            <a class="btn btn-info" href="{{ path('app_logout') }}">Déconnexion</a>
         {% else %}
-            <a href="{{ path('app_signup') }}">Inscription</a>
-            <a href="{{ path('app_signin') }}">Connexion</a>
+            <a class="btn btn-secondary" href="{{ path('app_signup') }}">Inscription</a>
+            <a class="btn btn-info" href="{{ path('app_signin') }}">Connexion</a>
         {% endif %}
     </nav>
 </header>

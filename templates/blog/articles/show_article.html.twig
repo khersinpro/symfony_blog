@@ -1,0 +1,29 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ article.title }}{% endblock %}
+
+{% block body %}
+    <div class="content">
+        <div class="showArticle">
+            <h1>{{ article.title }}</h1> 
+            <div class="showArticle--image">
+                <img src="{{article.image}}" alt="">
+            </div>
+            <div class="showArticle--content">
+                <p class="showArticle--content__text">{{ article.content }}</p>
+            </div>
+            <div class="showArticle--utility d-flex justify-content-between fill">
+                <div class="showArticle--utility__author d-flex justify-content-center align-items-center ">
+                    <div class="avatarContainer">
+                        <img class="avatarContainer--avatar" src="{{ article.author.avatar }}" alt="">
+                    </div>
+                    <p class="m-2">{{ article.author.nickname }}</p>
+                </div>
+                <div class="showArticle--utility__likes d-flex align-items-center ">            
+                    <button class="btn btn-primary" style='color:#fff;'><i class="fa-regular fa-thumbs-up"></i></button>
+                    <p class="">{{ article.likes }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

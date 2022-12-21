@@ -74,7 +74,7 @@ class BlogController extends AbstractController
         ]);
     }
 
-    #[Route('/blog/modify/article/{id}', name: 'app_modify_article')]
+    #[Route('/blog/modify/article/{id<\d+>}', name: 'app_modify_article')]
     public function modifyArticle(Article $article, Request $request, EntityManagerInterface $manager, FileUploader $fileUploader, Filesystem $fs)
     {   
         $currentUser = $this->getUser();
@@ -88,6 +88,7 @@ class BlogController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $currentArticleImg = $article->getImage();
             $newArticleImg = $form->get('image')->getData();
+
             if ($newArticleImg) {
                 $newArticleImgFilename = $fileUploader->uploadOneFile($newArticleImg, $this->getParameter('article.image.folder'));
                 $article->setImage($this->getParameter('article.image.public_path').$newArticleImgFilename);
@@ -100,6 +101,14 @@ class BlogController extends AbstractController
         return $this->render('blog/articles/article_form.html.twig', [
             'form' => $form,
             'title' => 'Modifier un article'
+        ]);
+    }
+
+    #[Route('/blog/article/{id}', name: 'app_show_article', requirements: ['id' => '\d+'])]
+    public function showArticle(Article $article)
+    {
+        return $this->render('blog/articles/show_article.html.twig', [
+            'article' => $article,
         ]);
     }
 }

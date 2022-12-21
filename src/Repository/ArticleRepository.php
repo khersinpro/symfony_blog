@@ -40,6 +40,23 @@ class ArticleRepository extends ServiceEntityRepository
         }
     }
 
+    public function getArticlesWithAuthor()
+    {
+        return $this->createQueryBuilder('article')
+            ->leftJoin('article.author', 'author')
+            ->addSelect('author')
+            ->getQuery()
+            ->getResult();
+    }
+
+    public function getCurrentUserArticle(int $id) 
+    {
+        return $this->createQueryBuilder('userArticle')
+            ->andWhere('userArticle.author = :id')
+            ->setParameter('id', $id)
+            ->getQuery()
+            ->getResult();
+    }
 //    /**
 //     * @return Article[] Returns an array of Article objects
 //     */

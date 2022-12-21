@@ -4,6 +4,8 @@ namespace App\Controller;
 
 use App\Entity\Article;
 use App\Form\ArticleType;
+use App\Repository\ArticleRepository;
+use App\Repository\UserRepository;
 use App\Service\FileUploader;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -15,14 +17,23 @@ use Symfony\Component\Routing\Annotation\Route;
 class BlogController extends AbstractController
 {
     #[Route('/', name: 'app_blog')]
-    public function displayArticles(): Response
+    public function displayArticles(ArticleRepository $articleManager, UserRepository $userRepository): Response
     {
+        $currentUser = $this->getUser();
+        $userArticles = $currentUser;
+        $articles = $articleManager->getArticlesWithAuthor();
+        // foreach ($userArticles as $article) {
+        //     dump($article);
+        // }
+        $userTest = $articleManager->findBy(['author' => $currentUser->getId()]);
+        dump($userTest);
         return $this->render('blog/index.html.twig', [
-            'controller_name' => 'BlogController',
+            'articles' => $articles,
+            'test' => $userArticles
         ]);
     }
 
-    #[Route('/blog/createarticle', name: 'app_create_article')]
+    #[Route('/blog/createarticle/', name: 'app_create_article')]
     public function createArticle(Request $request, EntityManagerInterface $manager, FileUploader $fileUploader): Response
     {
         $article = new Article(); 
@@ -45,6 +56,8 @@ class BlogController extends AbstractController
     
                 $this->addFlash('success', 'Votre article a été créer avec succés.');
                 return $this->redirectToRoute('app_blog');
+            } else {
+                $this->addFlash('danger', 'L\'image fournit est invalide.');
             }
         }
 

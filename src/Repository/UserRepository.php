@@ -56,6 +56,17 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
         $this->save($user, true);
     }
 
+    // public function getCurrentUserArticles(int $id)
+    // {
+    //     return $this->createQueryBuilder('author')
+    //         ->andWhere('author.id = :id') 
+    //         ->setParameter('id', $id)
+    //         ->leftJoin('author.id', 'article.author')
+    //         ->addSelect('article')
+    //         ->getQuery()
+    //         ->getResult();
+    // }
+
 //    /**
 //     * @return User[] Returns an array of User objects
 //     */

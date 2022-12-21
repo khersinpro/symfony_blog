@@ -3,5 +3,26 @@
 {% block title %}Accueil{% endblock %}
 
 {% block body %}
-
+    <div class="content">
+        <div class="article-container">
+            {% for article in articles %}
+                <div class="article">
+                    <div class="article--imageContainer">
+                        <img class="article--imageContainer__image" src="{{ article.image }}" alt="">
+                    </div>
+                    <p class="article--title">{{ article.title }}</p>
+                    <div class="article--author">
+                        <div class="avatarContainer">
+                            <img class="avatarContainer--avatar" src="{{ article.author.avatar }}" alt="">
+                        </div>
+                        <p>{{ article.author.nickname }}</p>
+                    </div>
+                    <div class="article--likes">
+                        <button class="article--likes__btn"><i class="fa-regular fa-thumbs-up"></i></button>
+                        <p class="article--likes__stat">{{ article.likes }}</p>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>    
+    </div>
 {% endblock %}

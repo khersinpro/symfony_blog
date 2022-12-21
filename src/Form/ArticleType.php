@@ -20,6 +20,8 @@ class ArticleType extends AbstractType
             ->add('content', TextareaType::class, ['label' => 'Contenu de l\'article'])
             ->add('image', FileType::class, [
                 'label' => 'Image de l\'article',
+                'mapped' => false,
+                'required' => false,
                 'constraints' => [
                     new Image([
                         'mimeTypes' => ['image/png','image/jpeg', 'image/webp'],

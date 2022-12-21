@@ -28,7 +28,7 @@ class Article
     #[ORM\Column(type: Types::TEXT)]
     private ?string $content = null;
     
-    #[Assert\NotBlank(message: 'Ce champ doit être remplis')]
+
     #[ORM\Column(length: 255)]
     private ?string $image = null;
 

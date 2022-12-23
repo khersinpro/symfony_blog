@@ -3,16 +3,15 @@
 namespace App\Controller;
 
 use App\Entity\Article;
+use App\Entity\Comment;
 use App\Entity\Like;
-use App\Entity\Question;
 use App\Form\ArticleType;
-use App\Form\QuestionType;
-use App\Form\UserType;
+use App\Form\CommentType;
 use App\Repository\ArticleRepository;
+use App\Repository\CommentRepository;
 use App\Repository\LikeRepository;
 use App\Repository\UserRepository;
 use App\Service\FileUploader;
-use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Filesystem\Filesystem;
@@ -27,7 +26,7 @@ class BlogController extends AbstractController
     public function displayArticles(ArticleRepository $articleRepository, UserRepository $userRepository, int $page): Response
     {
         $currentUser = $this->getUser();
-        $limit = 5;
+        $limit = 12;
         $offset = ($page -1) * $limit ;
         $nbrOfPages = ceil($articleRepository->count([]) / $limit);
         $articles = $articleRepository->getArticlesWithAuthor($offset, $limit);
@@ -104,11 +103,38 @@ class BlogController extends AbstractController
         ]);
     }
 
-    #[Route('/blog/article/{id}', name: 'app_show_article', requirements: ['id' => '\d+'])]
-    public function showArticle(Article $article)
+    #[Route('/blog/article/{id}/{page?1}', name: 'app_show_article', requirements: ['id' => '\d+', 'page' => '\d+'])]
+    public function showArticle(ArticleRepository $articleRepository, int $id, Request $request, 
+        EntityManagerInterface $manager, CommentRepository $commentRepository, int $page
+    )
     {
+        $limit = 15;
+        $offset = ($page - 1) * $limit;
+        $nbrOfPages = ceil($commentRepository->count(['article' => $id]) / $limit );
+
+        $articleComments = $commentRepository->findBy(['article' => $id], ['createdAt' => ' DESC'], $limit, $offset);
+        
+        $article = $articleRepository->findOneBy(['id' => $id]);
+        $comment = new Comment();
+        $commentForm = $this->createForm(CommentType::class, $comment)
+            ->add('submit', SubmitType::class, ['label' => 'Envoyer']);
+        $commentForm->handleRequest($request);
+
+        if ($commentForm->isSubmitted() && $commentForm->isValid()) {
+            $comment->setArticle($article);
+            $comment->setCreatedAt(new \DateTimeImmutable());
+            $comment->setAuthor($this->getUser());
+            $manager->persist($comment);
+            $manager->flush();
+            return $this->redirect($request->getUri());
+        }
+
         return $this->render('blog/articles/show_article.html.twig', [
             'article' => $article,
+            'form' => $commentForm,
+            'comments' => $articleComments,
+            'nbrOfPages' => $nbrOfPages,
+            'articleId' => $id
         ]);
     }
 
@@ -151,4 +177,10 @@ class BlogController extends AbstractController
         return $this->redirectToRoute('app_profile');
         
     }
+
+    // #[Route('/blog/comment/article/{id}', name: 'app_create_comment', requirements : ['id' => '\d+'])]
+    // public function postNewCom()
+    // {
+
+    // }
 }

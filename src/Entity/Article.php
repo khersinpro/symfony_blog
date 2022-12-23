@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\ArticleRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -41,6 +43,14 @@ class Article
 
     #[ORM\Column]
     private ?int $likes = null;
+
+    #[ORM\OneToMany(mappedBy: 'article', targetEntity: Like::class, orphanRemoval: true)]
+    private Collection $userLiked;
+
+    public function __construct()
+    {
+        $this->userLiked = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -115,6 +125,36 @@ class Article
     public function setLikes(int $likes): self
     {
         $this->likes = $likes;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Like>
+     */
+    public function getUserLiked(): Collection
+    {
+        return $this->userLiked;
+    }
+
+    public function addUserLiked(Like $userLiked): self
+    {
+        if (!$this->userLiked->contains($userLiked)) {
+            $this->userLiked->add($userLiked);
+            $userLiked->setArticle($this);
+        }
+
+        return $this;
+    }
+
+    public function removeUserLiked(Like $userLiked): self
+    {
+        if ($this->userLiked->removeElement($userLiked)) {
+            // set the owning side to null (unless already changed)
+            if ($userLiked->getArticle() === $this) {
+                $userLiked->setArticle(null);
+            }
+        }
 
         return $this;
     }

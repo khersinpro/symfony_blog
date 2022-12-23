@@ -20,7 +20,9 @@
                     <div class="d-flex justify-content-between mt-1">
                         <a class='btn btn-success' href="{{ path('app_show_article', {id: article.id}) }}">Voir l'article</a>
                         <div class="article--likes">
-                            <button class="article--likes__btn"><i class="fa-regular fa-thumbs-up"></i></button>
+                            <a href='{{ path('app_like_article', { id: article.id }) }}' class="article--likes__btn">
+                                <i class="fa-solid fa-thumbs-up {{ article.userLiked|map(like => like.author.id == app.user.id ? 'liked' )|join('') }} "></i>
+                            </a>
                             <p class="article--likes__stat">{{ article.likes }}</p>
                         </div>
                     </div>

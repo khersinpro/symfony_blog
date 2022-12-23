@@ -20,7 +20,7 @@
                     <p class="m-2">{{ article.author.nickname }}</p>
                 </div>
                 <div class="showArticle--utility__likes d-flex align-items-center ">            
-                    <button class="btn btn-primary" style='color:#fff;'><i class="fa-regular fa-thumbs-up"></i></button>
+                    <a href='{{ path('app_like_article', { id: article.id }) }}' class="btn btn-primary" style='color:#fff;'><i class="fa-regular fa-thumbs-up"></i></a>
                     <p class="">{{ article.likes }}</p>
                 </div>
             </div>

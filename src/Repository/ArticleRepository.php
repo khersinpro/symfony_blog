@@ -40,11 +40,17 @@ class ArticleRepository extends ServiceEntityRepository
         }
     }
 
-    public function getArticlesWithAuthor()
+    public function getArticlesWithAuthor(int $offset, int $limit)
     {
         return $this->createQueryBuilder('article')
+            
             ->leftJoin('article.author', 'author')
             ->addSelect('author')
+            ->leftJoin('article.userLiked', 'likers')
+            ->addSelect('likers')
+            ->setFirstResult($offset)
+            ->setMaxResults($limit)
+            ->orderBy('article.createdAt', 'DESC')
             ->getQuery()
             ->getResult();
     }

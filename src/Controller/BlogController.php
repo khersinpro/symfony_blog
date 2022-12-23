@@ -3,11 +3,13 @@
 namespace App\Controller;
 
 use App\Entity\Article;
+use App\Entity\Like;
 use App\Entity\Question;
 use App\Form\ArticleType;
 use App\Form\QuestionType;
 use App\Form\UserType;
 use App\Repository\ArticleRepository;
+use App\Repository\LikeRepository;
 use App\Repository\UserRepository;
 use App\Service\FileUploader;
 use Doctrine\ORM\EntityManager;
@@ -26,10 +28,9 @@ class BlogController extends AbstractController
     {
         $currentUser = $this->getUser();
         $userArticles = $currentUser;
-        $articles = $articleManager->getArticlesWithAuthor();
-        // foreach ($userArticles as $article) {
-        //     dump($article);
-        // }
+        $offset = 0 ;
+        $limit = 5;
+        $articles = $articleManager->getArticlesWithAuthor($offset, $limit);
         $userTest = $articleManager->findBy(['author' => $currentUser->getId()]);
         dump($userTest);
         return $this->render('blog/index.html.twig', [
@@ -110,5 +111,45 @@ class BlogController extends AbstractController
         return $this->render('blog/articles/show_article.html.twig', [
             'article' => $article,
         ]);
+    }
+
+    #[Route('/blog/article/like/{id}', name: 'app_like_article', requirements: ['id' => '\d+'])]
+    public function likeArticle(Article $article, Request $request, LikeRepository $likeRepository, EntityManagerInterface $manager)
+    {
+        $currentUser = $this->getUser();
+        $articleIsLiked = $likeRepository->findOneBy(['author' => $currentUser, 'article' => $article]);
+
+        if (!$articleIsLiked) {
+            $newLike = new Like();
+            $newLike->setArticle($article);
+            $newLike->setAuthor($currentUser);
+            $article->setLikes($article->getLikes() + 1);
+            $manager->persist($newLike);
+            $manager->flush();
+        } else {
+            $article->setLikes($article->getLikes() - 1);
+            $manager->remove($articleIsLiked);
+            $manager->flush();
+        }
+        $referer = $request->server->get('HTTP_REFERER');
+        return $referer ? $this->redirect($referer) : $this->redirectToRoute('app_blog');
+    }
+
+    #[Route('/blog/article/delete/{id<\d+>}', name: 'app_delete_article', methods: ['POST'])]
+    public function deleteArticle(EntityManagerInterface $manager, Article $article, Filesystem $fs,Request $request)
+    {
+        $currentUser = $this->getUser();
+        $submittedCsrfToken = $request->request->get('token');
+        
+        if (!$article || $article->getAuthor() !== $currentUser || !$this->isCsrfTokenValid('delete-item', $submittedCsrfToken)) {
+            return $this->redirectToRoute('app_blog');
+        }
+
+        $manager->remove($article);  
+        $fs->remove($this->getParameter('article.image.folder').pathinfo($article->getImage(), PATHINFO_BASENAME));
+        $manager->flush();
+        
+        return $this->redirectToRoute('app_profile');
+        
     }
 }

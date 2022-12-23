@@ -43,7 +43,6 @@ class ArticleRepository extends ServiceEntityRepository
     public function getArticlesWithAuthor(int $offset, int $limit)
     {
         return $this->createQueryBuilder('article')
-            
             ->leftJoin('article.author', 'author')
             ->addSelect('author')
             ->leftJoin('article.userLiked', 'likers')

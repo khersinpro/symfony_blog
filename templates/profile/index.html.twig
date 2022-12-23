@@ -33,11 +33,7 @@
                             </div>
                         {% endfor %}
                     </div>
-                    <div class="paginationContainer">
-                        {% for i in range(1, numberOfPages ) %}
-                            <a class='btn btn-info' href="{{ path('app_profile', { index: i }) }}">{{ i }}</a>
-                        {% endfor %}
-                    </div>
+                    {% include "layout/pagination.html.twig" with {'numberOfPages' : numberOfPages, 'page_localisation' : 'app_profile' } %}
                 {% endblock %}    
             </div>
         </div>

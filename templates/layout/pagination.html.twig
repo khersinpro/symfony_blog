@@ -1,0 +1,5 @@
+<div class="paginationContainer">
+    {% for i in range(1, numberOfPages ) %}
+        <a class='btn btn-info' href="{{ path(page_localisation, {page : i }) }}">{{ i }}</a>
+    {% endfor %}
+</div>

@@ -20,11 +20,11 @@ use Symfony\Component\Validator\Constraints\NotBlank;
 
 class ProfileController extends AbstractController
 {
-    #[Route('/profile/{index?1}', name: 'app_profile', requirements: ['index' => '\d+'])]
-    public function userProfile(ArticleRepository $articleRepository, int $index ): Response
+    #[Route('/profile/{page?1}', name: 'app_profile', requirements: ['page' => '\d+'])]
+    public function userProfile(ArticleRepository $articleRepository, int $page ): Response
     {
         $limit = 10;
-        $offset = (($index < 1 ? 1 : $index) - 1) * $limit;
+        $offset = (($page < 1 ? 1 : $page) - 1) * $limit;
         $currentUserId = $this->getUser()->getId();
         $currentUserArticles = $articleRepository->findBy(['author' => $currentUserId], ['createdAt' => 'DESC'], $limit, $offset );
         $countOfAllCurrentUserArticles = $articleRepository->count(['author' => $currentUserId]);

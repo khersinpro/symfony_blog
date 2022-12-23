@@ -30,4 +30,5 @@
             {% endfor %}
         </div>    
     </div>
+    {% include "layout/pagination.html.twig" with {'numberOfPages' : nbrOfPages, 'page_localisation' : 'app_blog' } %}
 {% endblock %}

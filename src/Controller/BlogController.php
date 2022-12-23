@@ -23,19 +23,18 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class BlogController extends AbstractController
 {
-    #[Route('/', name: 'app_blog')]
-    public function displayArticles(ArticleRepository $articleManager, UserRepository $userRepository): Response
+    #[Route('/blog/{page<\d+>?1}', name: 'app_blog')]
+    public function displayArticles(ArticleRepository $articleRepository, UserRepository $userRepository, int $page): Response
     {
         $currentUser = $this->getUser();
-        $userArticles = $currentUser;
-        $offset = 0 ;
         $limit = 5;
-        $articles = $articleManager->getArticlesWithAuthor($offset, $limit);
-        $userTest = $articleManager->findBy(['author' => $currentUser->getId()]);
-        dump($userTest);
+        $offset = ($page -1) * $limit ;
+        $nbrOfPages = ceil($articleRepository->count([]) / $limit);
+        $articles = $articleRepository->getArticlesWithAuthor($offset, $limit);
+
         return $this->render('blog/index.html.twig', [
             'articles' => $articles,
-            'test' => $userArticles
+            'nbrOfPages' => $nbrOfPages
         ]);
     }
 

@@ -12,6 +12,8 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ORM\Entity(repositoryClass: ArticleRepository::class)]
 class Article
 {
+    const categoryConstraint = ['politique', 'science', 'technologie', 'ecologie'];
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -49,6 +51,11 @@ class Article
 
     #[ORM\OneToMany(mappedBy: 'article', targetEntity: Comment::class, orphanRemoval: true)]
     private Collection $comments;
+
+    #[Assert\NotBlank(message: 'Ce champ doit être remplis')]
+    #[Assert\Choice(choices: Article::categoryConstraint, message: 'Ce choix est incorrect')]
+    #[ORM\Column(length: 50)]
+    private ?string $category = null;
 
     public function __construct()
     {
@@ -189,6 +196,18 @@ class Article
                 $comment->setArticle(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getCategory(): ?string
+    {
+        return $this->category;
+    }
+
+    public function setCategory(string $category): self
+    {
+        $this->category = $category;
 
         return $this;
     }

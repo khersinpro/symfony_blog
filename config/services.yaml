@@ -9,6 +9,7 @@ parameters:
     default.profile.avatar: '/images/profile/default_avatar.png'
     article.image.folder: '%kernel.project_dir%/public/images/blog_articles/'
     article.image.public_path: '/images/blog_articles/'
+    article.category.list: {'Politique': 'politique', 'Science': 'science', 'Technologie': 'technologie', 'Ecologie': 'ecologie'}
 services:
     # default configuration for services in *this* file
     _defaults:
@@ -33,3 +34,6 @@ services:
             $profileAvatarFolder: '%profile.folder%'
             $profileAvatarPublicPath: '%profile.public.path%'
             $defaultProfileAvatar: '%default.profile.avatar%'
+    # App\Entity\Article:
+    #     arguments:
+    #         $category: '%article.category.list%'        

@@ -22,18 +22,26 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class BlogController extends AbstractController
 {
-    #[Route('/blog/{page<\d+>?1}', name: 'app_blog')]
-    public function displayArticles(ArticleRepository $articleRepository, UserRepository $userRepository, int $page): Response
+    #[Route('/blog/{page<\d+>?1}/{category?}', name: 'app_blog')]
+    public function displayArticles(ArticleRepository $articleRepository, UserRepository $userRepository, int $page, $category): Response
     {
+        $allCategory = $this->getParameter('article.category.list');
+        if ($category && !in_array($category, $allCategory)) {
+            return  $this->redirectToRoute('app_blog');
+        }
+
         $currentUser = $this->getUser();
         $limit = 12;
         $offset = ($page -1) * $limit ;
-        $nbrOfPages = ceil($articleRepository->count([]) / $limit);
-        $articles = $articleRepository->getArticlesWithAuthor($offset, $limit);
+        $nbrOfPages = ceil($articleRepository->count($category ? ["category" => $category] : []) / $limit);
+        $articles = $articleRepository->getArticlesWithAuthor($offset, $limit, $category);
 
         return $this->render('blog/index.html.twig', [
             'articles' => $articles,
-            'nbrOfPages' => $nbrOfPages
+            'nbrOfPages' => $nbrOfPages,
+            'actualPage' => $page,
+            'category' => $allCategory,
+            'actualCategory' => $category?? null
         ]);
     }
 
@@ -41,7 +49,9 @@ class BlogController extends AbstractController
     public function createArticle(Request $request, EntityManagerInterface $manager, FileUploader $fileUploader): Response
     {
         $article = new Article(); 
-        $form = $this->createForm(ArticleType::class, $article)
+        $form = $this->createForm(ArticleType::class, $article, [
+                "category" => $this->getParameter('article.category.list')
+            ])
             ->add('submit', SubmitType::class, ['label' => 'Créer l\'article']);
         $form->handleRequest($request);
 

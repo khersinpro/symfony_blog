@@ -40,18 +40,23 @@ class ArticleRepository extends ServiceEntityRepository
         }
     }
 
-    public function getArticlesWithAuthor(int $offset, int $limit)
+    public function getArticlesWithAuthor(int $offset, int $limit, string $category = null)
     {
-        return $this->createQueryBuilder('article')
-            ->leftJoin('article.author', 'author')
-            ->addSelect('author')
-            ->leftJoin('article.userLiked', 'likers')
-            ->addSelect('likers')
-            ->setFirstResult($offset)
-            ->setMaxResults($limit)
-            ->orderBy('article.createdAt', 'DESC')
-            ->getQuery()
-            ->getResult();
+        $query = $this->createQueryBuilder('article')
+        ->leftJoin('article.author', 'author')
+        ->addSelect('author')
+        ->leftJoin('article.userLiked', 'likers')
+        ->addSelect('likers')
+        ->setFirstResult($offset)
+        ->setMaxResults($limit)
+        ->orderBy('article.createdAt', 'DESC');
+        
+        if ($category) {
+            $query->where('article.category = :category')
+            ->setParameter('category', $category);
+        }
+
+        return $query->getQuery()->getResult();
     }
 
     public function getCurrentUserArticle(int $id) 

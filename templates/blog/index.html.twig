@@ -3,7 +3,13 @@
 {% block title %}Accueil{% endblock %}
 
 {% block body %}
-    <div class="content">
+    <div class="content d-flex flex-column">
+        <div class="category d-flex justify-content-center">
+            <a class='btn' href="{{ path('app_blog', {page: 1 }) }}">Tous les articles</a>
+            {% for key, cat in category %}
+                <a class='btn' href="{{ path('app_blog', {page: 1, category: cat}) }}">{{ key }}</a>
+            {% endfor %}
+        </div>
         <div class="article-container">
             {% for article in articles %}
                 <div class="article">
@@ -30,5 +36,12 @@
             {% endfor %}
         </div>    
     </div>
-    {% include "layout/pagination.html.twig" with {'numberOfPages' : nbrOfPages, 'page_localisation' : 'app_blog' } %}
+    {% if nbrOfPages > 1 %}
+        <div class="paginationContainer">
+            {% for i in range(1, nbrOfPages ) %}
+                <a class='btn btn-info' href="{{ path('app_blog', {page: i, category: actualCategory}) }}">{{ i }}</a>
+            {% endfor %}
+        </div>
+    {% endif %}
+    
 {% endblock %}

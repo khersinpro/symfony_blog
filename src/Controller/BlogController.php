@@ -22,7 +22,7 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class BlogController extends AbstractController
 {
-    #[Route('/blog/{page<\d+>?1}/{category?}', name: 'app_blog')]
+    #[Route('/{page<\d+>?1}/{category?}', name: 'app_blog')]
     public function displayArticles(ArticleRepository $articleRepository, UserRepository $userRepository, int $page, $category): Response
     {
         $allCategory = $this->getParameter('article.category.list');
@@ -45,7 +45,7 @@ class BlogController extends AbstractController
         ]);
     }
 
-    #[Route('/blog/createarticle/', name: 'app_create_article')]
+    #[Route('/blog/user/createarticle/', name: 'app_create_article')]
     public function createArticle(Request $request, EntityManagerInterface $manager, FileUploader $fileUploader): Response
     {
         $article = new Article(); 
@@ -83,7 +83,7 @@ class BlogController extends AbstractController
         ]);
     }
 
-    #[Route('/blog/modify/article/{id<\d+>}', name: 'app_modify_article')]
+    #[Route('/blog/user/modify/article/{id<\d+>}', name: 'app_modify_article')]
     public function modifyArticle(Article $article, Request $request, EntityManagerInterface $manager, FileUploader $fileUploader, Filesystem $fs)
     {   
         $currentUser = $this->getUser();
@@ -148,7 +148,7 @@ class BlogController extends AbstractController
         ]);
     }
 
-    #[Route('/blog/article/like/{id}', name: 'app_like_article', requirements: ['id' => '\d+'])]
+    #[Route('/blog/user/article/like/{id}', name: 'app_like_article', requirements: ['id' => '\d+'])]
     public function likeArticle(Article $article, Request $request, LikeRepository $likeRepository, EntityManagerInterface $manager)
     {
         $currentUser = $this->getUser();
@@ -170,7 +170,7 @@ class BlogController extends AbstractController
         return $referer ? $this->redirect($referer) : $this->redirectToRoute('app_blog');
     }
 
-    #[Route('/blog/article/delete/{id<\d+>}', name: 'app_delete_article', methods: ['POST'])]
+    #[Route('/blog/user/article/delete/{id<\d+>}', name: 'app_delete_article', methods: ['POST'])]
     public function deleteArticle(EntityManagerInterface $manager, Article $article, Filesystem $fs,Request $request)
     {
         $currentUser = $this->getUser();

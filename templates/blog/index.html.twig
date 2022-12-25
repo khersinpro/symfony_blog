@@ -5,9 +5,9 @@
 {% block body %}
     <div class="content d-flex flex-column">
         <div class="category d-flex justify-content-center">
-            <a class='btn' href="{{ path('app_blog', {page: 1 }) }}">Tous les articles</a>
+            <a class='btn {{ actualCategory?? 'btn-info' }}' href="{{ path('app_blog', {page: 1 }) }}">Tous les articles</a>
             {% for key, cat in category %}
-                <a class='btn' href="{{ path('app_blog', {page: 1, category: cat}) }}">{{ key }}</a>
+                <a class='btn {{ cat == actualCategory ? 'btn-info' }}' href="{{ path('app_blog', {page: 1, category: cat}) }}">{{ key }}</a>
             {% endfor %}
         </div>
         <div class="article-container">
@@ -26,9 +26,15 @@
                     <div class="d-flex justify-content-between mt-1">
                         <a class='btn btn-success' href="{{ path('app_show_article', {id: article.id}) }}">Voir l'article</a>
                         <div class="article--likes">
+                            {% if app.user %}
                             <a href='{{ path('app_like_article', { id: article.id }) }}' class="article--likes__btn">
                                 <i class="fa-solid fa-thumbs-up {{ article.userLiked|map(like => like.author.id == app.user.id ? 'liked' )|join('') }} "></i>
                             </a>
+                            {% else %}
+                            <div class="article--likes__btn">
+                                <i class="fa-solid fa-thumbs-up"></i>
+                            </div>
+                            {% endif %}
                             <p class="article--likes__stat">{{ article.likes }}</p>
                         </div>
                     </div>
@@ -39,7 +45,7 @@
     {% if nbrOfPages > 1 %}
         <div class="paginationContainer">
             {% for i in range(1, nbrOfPages ) %}
-                <a class='btn btn-info' href="{{ path('app_blog', {page: i, category: actualCategory}) }}">{{ i }}</a>
+                <a class='btn {{ actualPage == i ? 'btn-success' : 'btn-info' }} ' href="{{ path('app_blog', {page: i, category: actualCategory}) }}">{{ i }}</a>
             {% endfor %}
         </div>
     {% endif %}

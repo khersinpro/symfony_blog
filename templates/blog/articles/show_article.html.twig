@@ -19,35 +19,43 @@
                     </div>
                     <p class="m-2">{{ article.author.nickname }}</p>
                 </div>
+                
                 <div class="showArticle--utility__likes d-flex align-items-center ">            
+                    {% if app.user %}
                     <a href='{{ path('app_like_article', { id: article.id }) }}' class="btn" style='color:#fff;'><i class="fa-regular fa-thumbs-up"></i></a>
+                    {% else %}
+                    <div class="btn" style='color:#fff;'><i class="fa-regular fa-thumbs-up"></i></div>
+                    {% endif %}
                     <p class="">{{ article.likes }}</p>
                 </div>
             </div>
-            <div class="commentContainer mt-4">
-                <div class="commentContainer--comments">
-                    {% for comment in comments %}
-                    <div class="commentContainer--comments__box box mb-3 px-3 py-2">
-                        <div class="comment-header d-flex justify-content-between align-items-center mb-2">
-                            <div class="comment-header-info d-flex align-items-center">
-                                <div class="avatarContainer">
-                                    <img class="avatarContainer--avatar" src="{{ comment.author.avatar }}" alt="">
+                <div class="commentContainer mt-4">
+                    <h2>Commentaires</h2>
+                    <div class="commentContainer--comments">
+                        {% for comment in comments %}
+                        <div class="commentContainer--comments__box box mb-3 px-3 py-2">
+                            <div class="comment-header d-flex justify-content-between align-items-center mb-2">
+                                <div class="comment-header-info d-flex align-items-center">
+                                    <div class="avatarContainer">
+                                        <img class="avatarContainer--avatar" src="{{ comment.author.avatar }}" alt="">
+                                    </div>
+                                    <p class="m-1">{{ comment.author.nickname }}</p>
                                 </div>
-                                <p class="m-1">{{ comment.author.nickname }}</p>
+                                <div class='comment-header-date'>
+                                    <p>{{ comment.createdAt|date() }}</p>
+                                </div>
                             </div>
-                            <div class='comment-header-date'>
-                                <p>{{ comment.createdAt|date() }}</p>
+                            <div class="comment-content">
+                                <p class="m-1 p-2">{{ comment.content }}</p>
                             </div>
                         </div>
-                        <div class="comment-content">
-                            <p class="m-1 p-2">{{ comment.content }}</p>
-                        </div>
+                        {% endfor %}
                     </div>
-                    {% endfor %}
-                </div>
-                {{ form_start(form) }}
-                {{ form_end(form) }}
-            </div> 
+                {% if app.user %}
+                    {{ form_start(form) }}
+                    {{ form_end(form) }}
+                {% endif %}
+                </div> 
             {% if nbrOfPages > 1 %}
                 <div class="paginationContainer">
                     {% for i in range(1, nbrOfPages ) %}

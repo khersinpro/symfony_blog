@@ -22,6 +22,7 @@ security:
                 enable_csrf: true
             logout:
                 path: app_logout
+                target: app_blog
             remember_me:
                 secret: '%kernel.secret%'
                 lifetime: 604800
@@ -37,6 +38,7 @@ security:
     access_control:
         # - { path: ^/admin, roles: ROLE_ADMIN }
         - { path: ^/profile, roles: ROLE_USER }
+        - { path: ^/blog/user, roles: ROLE_USER }
 
 when@test:
     security:

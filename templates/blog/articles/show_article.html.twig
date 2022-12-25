@@ -44,6 +44,12 @@
                                 <div class='comment-header-date'>
                                     <p>{{ comment.createdAt|date() }}</p>
                                 </div>
+                                {% if is_granted('ROLE_USER') and app.user.id == comment.author.id %}
+                                    <form action="{{ path('app_delete_comment', {id: comment.id}) }}" method='post'>
+                                        <input type="hidden" name="token" value="{{ csrf_token('delete-item') }}"/>
+                                        <button class='btn btn-danger' type='submit'>Delete</button>
+                                    </form>
+                                {% endif %} 
                             </div>
                             <div class="comment-content">
                                 <p class="m-1 p-2">{{ comment.content }}</p>

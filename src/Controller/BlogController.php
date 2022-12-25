@@ -113,7 +113,7 @@ class BlogController extends AbstractController
         ]);
     }
 
-    #[Route('/blog/article/{id}/{page?1}', name: 'app_show_article', requirements: ['id' => '\d+', 'page' => '\d+'])]
+    #[Route('/blog/article/{id}/{page?1}', name: 'app_show_article', requirements: ['id' => '\d+', 'page' => '\d+'], methods: ['POST', 'GET'])]
     public function showArticle(ArticleRepository $articleRepository, int $id, Request $request, 
         EntityManagerInterface $manager, CommentRepository $commentRepository, int $page
     )
@@ -148,7 +148,7 @@ class BlogController extends AbstractController
         ]);
     }
 
-    #[Route('/blog/user/article/like/{id}', name: 'app_like_article', requirements: ['id' => '\d+'])]
+    #[Route('/blog/user/article/like/{id}', name: 'app_like_article', requirements: ['id' => '\d+'], methods: ['GET'])]
     public function likeArticle(Article $article, Request $request, LikeRepository $likeRepository, EntityManagerInterface $manager)
     {
         $currentUser = $this->getUser();
@@ -188,9 +188,21 @@ class BlogController extends AbstractController
         
     }
 
-    // #[Route('/blog/comment/article/{id}', name: 'app_create_comment', requirements : ['id' => '\d+'])]
-    // public function postNewCom()
-    // {
+    #[Route('/blog/user/comment/delete/{id}', name: 'app_delete_comment', requirements : ['id' => '\d+'], methods: ['POST'])]
+    public function deleteComment(Comment $comment, Request $request, EntityManagerInterface $manager)
+    {
+        $submittedCsrfToken = $request->request->get('token');
+        if (!$comment || !$this->isCsrfTokenValid('delete-item', $submittedCsrfToken) || $comment->getAuthor() !== $this->getUser()) {
+            return $this->redirectToRoute('app_blog');
+        }
 
-    // }
+        $manager->remove($comment);
+        $manager->flush();
+        $this->addFlash('success', 'Commentaire supprimé avec succés.');
+
+
+        $referer = $request->server->get('HTTP_REFERER')?? '/';
+        return $this->redirect($referer);
+
+    }
 }

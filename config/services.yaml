@@ -34,6 +34,6 @@ services:
             $profileAvatarFolder: '%profile.folder%'
             $profileAvatarPublicPath: '%profile.public.path%'
             $defaultProfileAvatar: '%default.profile.avatar%'
-    # App\Entity\Article:
-    #     arguments:
-    #         $category: '%article.category.list%'        
+    # App\Service\ArticleTool:
+    #     arguments: 
+    #         $limit: 12        
